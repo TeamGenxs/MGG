@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>GENXS Interface</title>
+    <style>
+        /* Importamos la fuente futurista */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body, html {
+            width: 100%;
+            height: 100%;
+            background-color: #03060a;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            position: fixed;
+            touch-action: manipulation;
+        }
+
+        /* Canvas para las partículas del fondo */
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        /* Contenedor principal de la interfaz */
+        .ui-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        /* --- ZONA LATERAL INTERACTIVA --- */
+        .left-sidebar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            padding: 40px;
+            padding-right: 80px;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            z-index: 10;
+            width: auto;
+        }
+        .left-sidebar::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* --- LOGO SUPERIOR IZQUIERDO --- */
+        .logo {
+            margin-bottom: 50px;
+            cursor: pointer;
+            display: inline-block;
+        }
+        .logo h1 {
+            color: #00e5ff;
+            font-size: 28px;
+            letter-spacing: 4px;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+            transition: text-shadow 0.3s;
+        }
+        .logo:hover h1 {
+            text-shadow: 0 0 20px rgba(0, 229, 255, 0.8);
+        }
+        .logo p {
+            color: #4f7b91;
+            font-size: 10px;
+            letter-spacing: 2px;
+            margin-top: 5px;
+        }
+
+        /* --- SISTEMA DE MENÚS EN CASCADA --- */
+        .menu-wrapper {
+            display: flex;
+            gap: 80px;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+            transform: translateX(0);
+            opacity: 1;
+        }
+
+        .menu-wrapper.collapsed {
+            transform: translateX(-30px);
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .menu-column {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            border-left: 1px solid rgba(0, 229, 255, 0.2);
+            padding-left: 30px;
+            min-width: 280px;
+        }
+
+        .menu-title {
+            color: #4f7b91;
+            font-size: 14px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+
+        .menu-item {
+            color: #a0b9c6;
+            font-size: 18px;
+            text-decoration: none;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #00e5ff;
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.8);
+            transform: translateX(12px);
+        }
+
+        .submenu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .submenu-item {
+            color: #a0b9c6;
+            font-size: 16px;
+            text-decoration: none;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: block;
+        }
+
+        .submenu-item:hover {
+            color: #ffffff;
+            transform: translateX(10px);
+            text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        /* --- BOTÓN CENTRAL DE COMPRA --- */
+        .center-buy-button {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 100;
+            pointer-events: auto;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .center-buy-button.visible {
+            display: block;
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .center-buy-button.hidden {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8);
+            pointer-events: none;
+        }
+
+        .buy-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: rgba(0, 229, 255, 0.1);
+            border: 2px solid #00e5ff;
+            color: #00e5ff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 24px;
+            letter-spacing: 4px;
+            padding: 25px 50px;
+            cursor: pointer;
+            text-transform: uppercase;
+            text-decoration: none;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(0, 229, 255, 0.3), inset 0 0 30px rgba(0, 229, 255, 0.1);
+            transition: all 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .buy-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(0, 229, 255, 0.1), transparent, rgba(0, 229, 255, 0.05), transparent);
+            animation: rotate 4s linear infinite;
+        }
+
+        .buy-btn::after {
+            content: '';
+            position: absolute;
+            inset: 2px;
+            background: rgba(3, 6, 10, 0.9);
+            border-radius: 2px;
+            z-index: -1;
+        }
+
+        @keyframes rotate {
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .buy-btn:hover {
+            background: rgba(0, 229, 255, 0.2);
+            box-shadow: 0 0 60px rgba(0, 229, 255, 0.6), inset 0 0 60px rgba(0, 229, 255, 0.2);
+            color: #ffffff;
+            border-color: #ffffff;
+            transform: scale(1.05);
+        }
+
+        .buy-btn:active {
+            transform: scale(0.95);
+            background: rgba(0, 229, 255, 0.3);
+            box-shadow: 0 0 80px rgba(0, 229, 255, 0.8), inset 0 0 80px rgba(0, 229, 255, 0.3);
+        }
+
+        .buy-btn .btn-icon {
+            font-size: 28px;
+        }
+
+        .buy-btn .btn-text {
+            position: relative;
+            z-index: 1;
+            text-shadow: 0 0 10px rgba(0, 229, 255, 0.5);
+        }
+
+        /* Overlay de fondo cuando el botón está visible */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 99;
+            pointer-events: auto;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .overlay.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        /* --- RELOJ INFERIOR CENTRAL --- */
+        .system-info {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            border-bottom: 1px solid rgba(0, 229, 255, 0.2);
+            padding-bottom: 10px;
+            width: 280px;
+            pointer-events: auto;
+            z-index: 1;
+        }
+        .system-label {
+            color: #4f7b91;
+            font-size: 9px;
+            letter-spacing: 2px;
+            margin-bottom: 3px;
+            text-transform: uppercase;
+        }
+        .system-date {
+            color: #a0b9c6;
+            font-size: 18px;
+            letter-spacing: 3px;
+            margin-bottom: 10px;
+        }
+        .system-time {
+            font-size: 34px;
+            color: #ffffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 12px rgba(0, 229, 255, 0.4);
+        }
+
+        /* ========================================= */
+        /* MEDIA QUERIES PARA MÓVILES (ANDROID/iOS)  */
+        /* ========================================= */
+        @media (max-width: 768px) {
+            .left-sidebar {
+                padding: 25px 20px;
+                width: 100%;
+                height: 100%;
+                padding-right: 20px;
+                background: rgba(3, 6, 10, 0.7);
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+                pointer-events: auto;
+            }
+            .logo {
+                margin-bottom: 30px;
+                width: fit-content;
+            }
+            .menu-wrapper {
+                flex-direction: column;
+                gap: 40px;
+                transform: translateY(0);
+            }
+            .menu-wrapper.collapsed {
+                transform: translateY(-15px);
+                opacity: 0;
+                pointer-events: none;
+            }
+            .menu-column {
+                min-width: auto;
+                width: 100%;
+                border-left: none;
+                padding-left: 0;
+            }
+            .system-info {
+                width: 90%;
+                bottom: 20px;
+            }
+            
+            .buy-btn {
+                font-size: 20px;
+                padding: 20px 35px;
+                letter-spacing: 3px;
+            }
+            
+            .buy-btn .btn-icon {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- Overlay de fondo -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- Botón central de compra -->
+    <div class="center-buy-button hidden" id="center-buy-button">
+        <a href="#" class="buy-btn" id="buy-button-link" target="_blank" rel="noopener noreferrer">
+            <span class="btn-icon">💳</span>
+            <span class="btn-text">COMPRAR</span>
+        </a>
+    </div>
+
+    <div class="ui-container">
+        
+        <div class="left-sidebar" id="sidebar">
+            
+            <div class="logo" id="logo-btn">
+                <h1>GENXS</h1>
+                <p>COINS | MACRO | ACCOUNTS</p>
+            </div>
+
+            <div class="menu-wrapper collapsed" id="menu-wrapper">
+                
+                <div class="menu-column">
+                    <div class="menu-title">Main Menu</div>
+                    <a class="menu-item active" data-target="support">Support</a>
+                    <a class="menu-item" data-target="mgg">Mutant: Genetic Gladiator</a>
+                    <a class="menu-item" data-target="pvz">Plants VS Zombies</a>
+                </div>
+
+                <div class="menu-column">
+                    <div class="menu-title" id="submenu-title" style="color: #00e5ff; text-shadow: 0 0 5px rgba(0,229,255,0.5);">Support</div>
+                    <div class="submenu-container" id="submenu-content">
+                        <a href="#" class="submenu-item">Discord</a>
+                        <a href="#" class="submenu-item">Facebook</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="system-info">
+            <div class="system-label">Current Date</div>
+            <div class="system-date" id="date">--</div>
+            <div class="system-label">System Time</div>
+            <div class="system-time" id="time">--:--:--</div>
+        </div>
+
+    </div>
+
+    <script>
+        (function() {
+            // --- 1. LÓGICA HÍBRIDA: HOVER (PC) Y TOUCH (MÓVIL) ---
+            const sidebar = document.getElementById('sidebar');
+            const menuWrapper = document.getElementById('menu-wrapper');
+            const logoBtn = document.getElementById('logo-btn');
+            const overlay = document.getElementById('overlay');
+            const centerBuyButton = document.getElementById('center-buy-button');
+            const buyButtonLink = document.getElementById('buy-button-link');
+
+            const isMobile = () => window.innerWidth <= 768;
+
+            // Variable para almacenar el enlace de PayPal
+            let paypalLink = '';
+
+            sidebar.addEventListener('mouseenter', () => {
+                if (!isMobile()) {
+                    menuWrapper.classList.remove('collapsed');
+                }
+            });
+
+            sidebar.addEventListener('mouseleave', () => {
+                if (!isMobile()) {
+                    menuWrapper.classList.add('collapsed');
+                }
+            });
+
+            logoBtn.addEventListener('click', (e) => {
+                if (isMobile()) {
+                    e.stopPropagation();
+                    menuWrapper.classList.toggle('collapsed');
+                }
+            });
+
+            document.addEventListener('click', (e) => {
+                if (isMobile() && !sidebar.contains(e.target)) {
+                    menuWrapper.classList.add('collapsed');
+                }
+            });
+
+            menuWrapper.addEventListener('click', (e) => {
+                if (isMobile()) {
+                    e.stopPropagation();
+                }
+            });
+
+            window.addEventListener('resize', () => {
+                if (!isMobile()) {
+                    menuWrapper.classList.add('collapsed');
+                }
+            });
+
+            // Función para mostrar el botón central
+            function showCenterButton(link) {
+                paypalLink = link;
+                buyButtonLink.href = link;
+                overlay.classList.add('visible');
+                centerBuyButton.classList.remove('hidden');
+                centerBuyButton.classList.add('visible');
+            }
+
+            // Función para ocultar el botón central
+            function hideCenterButton() {
+                overlay.classList.remove('visible');
+                centerBuyButton.classList.remove('visible');
+                centerBuyButton.classList.add('hidden');
+                setTimeout(() => {
+                    overlay.style.display = 'none';
+                }, 300);
+            }
+
+            // Cerrar al hacer clic en el overlay
+            overlay.addEventListener('click', hideCenterButton);
+
+            // Efecto de clic en el botón de compra
+            buyButtonLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Animación de carga
+                buyButtonLink.style.pointerEvents = 'none';
+                const btnText = buyButtonLink.querySelector('.btn-text');
+                const btnIcon = buyButtonLink.querySelector('.btn-icon');
+                const originalText = btnText.innerText;
+                const originalIcon = btnIcon.innerText;
+                
+                btnText.innerText = 'REDIRIGIENDO...';
+                btnIcon.innerText = '⏳';
+                buyButtonLink.style.opacity = '0.8';
+                
+                // Redirigir después de una breve animación
+                setTimeout(() => {
+                    window.open(paypalLink, '_blank', 'noopener,noreferrer');
+                    
+                    // Restaurar el botón
+                    btnText.innerText = originalText;
+                    btnIcon.innerText = originalIcon;
+                    buyButtonLink.style.pointerEvents = 'auto';
+                    buyButtonLink.style.opacity = '1';
+                    
+                    // Ocultar el botón central
+                    hideCenterButton();
+                }, 800);
+            });
+
+            // --- 2. BASE DE DATOS DE CONTENIDOS DEL SUBMENÚ ---
+            const menuData = {
+                support: {
+                    title: "Support",
+                    items: [
+                        { name: "Discord", link: "#" },
+                        { name: "Facebook", link: "#" }
+                    ]
+                },
+                mgg: {
+                    title: "Mutant: Genetic Gladiator",
+                    items: [
+                        { name: "Account Management", link: "#", hasBuyButton: true, paypalLink: "#" },
+                        { name: "Sale of Credits", link: "#", hasBuyButton: true, paypalLink: "https://www.paypal.com/ncp/payment/SZ3TURZ8BMEYA" },
+                        { name: "Macrorify", link: "#" }
+                    ]
+                },
+                pvz: {
+                    title: "Plants VS Zombies",
+                    items: [
+                        { name: "Unlocks & Cheats", link: "#" },
+                        { name: "Garden Scripts", link: "#" }
+                    ]
+                }
+            };
+
+            // --- 3. LÓGICA DE INTERACCIÓN INTERNA DEL MENÚ ---
+            const menuItems = document.querySelectorAll('.menu-item');
+            const submenuTitle = document.getElementById('submenu-title');
+            const submenuContent = document.getElementById('submenu-content');
+
+            menuItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    
+                    document.querySelector('.menu-item.active').classList.remove('active');
+                    item.classList.add('active');
+
+                    const targetKey = item.getAttribute('data-target');
+                    const targetData = menuData[targetKey];
+
+                    if (targetData) {
+                        submenuTitle.innerText = targetData.title;
+                        submenuContent.innerHTML = '';
+                        
+                        targetData.items.forEach(subItem => {
+                            const container = document.createElement('div');
+                            container.style.display = 'flex';
+                            container.style.alignItems = 'center';
+                            container.style.gap = '12px';
+                            container.style.flexWrap = 'wrap';
+                            
+                            const label = document.createElement('span');
+                            label.className = 'submenu-item';
+                            label.innerText = subItem.name;
+                            label.style.cursor = 'pointer';
+                            label.style.flex = '1';
+                            
+                            container.appendChild(label);
+                            
+                            if (subItem.hasBuyButton) {
+                                const buyIcon = document.createElement('span');
+                                buyIcon.innerText = '💳';
+                                buyIcon.style.cursor = 'pointer';
+                                buyIcon.style.fontSize = '18px';
+                                buyIcon.style.transition = 'all 0.3s ease';
+                                buyIcon.style.opacity = '0.7';
+                                buyIcon.title = 'Comprar';
+                                
+                                buyIcon.addEventListener('mouseenter', () => {
+                                    buyIcon.style.opacity = '1';
+                                    buyIcon.style.transform = 'scale(1.2)';
+                                    buyIcon.style.textShadow = '0 0 10px rgba(0, 229, 255, 0.8)';
+                                });
+                                
+                                buyIcon.addEventListener('mouseleave', () => {
+                                    buyIcon.style.opacity = '0.7';
+                                    buyIcon.style.transform = 'scale(1)';
+                                    buyIcon.style.textShadow = 'none';
+                                });
+                                
+                                // Click en el icono para mostrar botón central
+                                buyIcon.addEventListener('click', (event) => {
+                                    event.stopPropagation();
+                                    if (subItem.paypalLink && subItem.paypalLink !== '#') {
+                                        showCenterButton(subItem.paypalLink);
+                                    }
+                                });
+                                
+                                container.appendChild(buyIcon);
+                            }
+                            
+                            submenuContent.appendChild(container);
+                        });
+                    }
+                });
+            });
+
+            // --- 4. LÓGICA DEL RELOJ EN TIEMPO REAL ---
+            function updateTime() {
+                const now = new Date();
+                const options = { month: 'short', day: 'numeric', year: 'numeric' };
+                const dateElement = document.getElementById('date');
+                const timeElement = document.getElementById('time');
+                if (dateElement) {
+                    dateElement.innerText = now.toLocaleDateString('en-US', options).toUpperCase();
+                }
+                if (timeElement) {
+                    const hours = String(now.getHours()).padStart(2, '0');
+                    const minutes = String(now.getMinutes()).padStart(2, '0');
+                    const seconds = String(now.getSeconds()).padStart(2, '0');
+                    timeElement.innerText = `${hours}:${minutes}:${seconds}`;
+                }
+            }
+            setInterval(updateTime, 1000);
+            updateTime();
+
+            // --- 5. SISTEMA DE PARTÍCULAS CUADRADAS (FONDO) ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+            let particleCount = (window.innerWidth < 768) ? 70 : 180;
+            let animationFrameId = null;
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                initParticles();
+            }
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2.5 + 0.5; 
+                    this.speedX = (Math.random() - 0.5) * 0.3;
+                    this.speedY = (Math.random() - 0.5) * 0.3;
+                    this.color = Math.random() > 0.7 ? 'rgba(0, 229, 255, 0.6)' : 'rgba(100, 130, 150, 0.3)';
+                }
+                update() {
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                    if (this.x < 0) this.x = canvas.width;
+                    if (this.x > canvas.width) this.x = 0;
+                    if (this.y < 0) this.y = canvas.height;
+                    if (this.y > canvas.height) this.y = 0;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.fillRect(this.x, this.y, this.size, this.size);
+                }
+            }
+
+            function initParticles() {
+                particles = [];
+                particleCount = (window.innerWidth < 768) ? 70 : 180;
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+
+            function animateParticles() {
+                if (ctx && canvas) {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    particles.forEach(p => { p.update(); p.draw(); });
+                }
+                animationFrameId = requestAnimationFrame(animateParticles);
+            }
+
+            if (window.particleAnimation) {
+                cancelAnimationFrame(window.particleAnimation);
+            }
+            
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+            initParticles();
+            animateParticles();
+        })();
+    </script>
+</body>
+</html>
