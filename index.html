@@ -24,7 +24,6 @@
         }
         .ui-container.visible { opacity: 1; }
 
-        /* INTRO ANIMATION */
         .intro-animation {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             z-index: 100; pointer-events: none; display: flex;
@@ -32,9 +31,7 @@
             background: radial-gradient(circle at center, rgba(0,255,65,0.08) 0%, transparent 70%);
         }
 
-        .intro-content {
-            display: flex; flex-direction: column; align-items: center; gap: 20px;
-        }
+        .intro-content { display: flex; flex-direction: column; align-items: center; gap: 20px; }
 
         .intro-logo {
             color: #00ff41; font-size: clamp(60px, 10vw, 100px); letter-spacing: clamp(10px, 2vw, 20px);
@@ -55,9 +52,7 @@
             animation: scanline 2s ease-in-out infinite; opacity: 0.3;
         }
 
-        @keyframes scanline {
-            0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; }
-        }
+        @keyframes scanline { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
 
         @keyframes introPulse {
             0% { opacity: 0; transform: scale(0.5); }
@@ -74,7 +69,6 @@
 
         .intro-logo.done, .intro-subtitle.done, .intro-animation.done { display: none; }
 
-        /* LOGO SUPERIOR */
         .logo-container {
             position: absolute; top: clamp(15px, 3vh, 20px); left: 50%; transform: translateX(-50%);
             pointer-events: auto; text-align: center; z-index: 10;
@@ -110,36 +104,57 @@
             transition: all 0.3s ease;
         }
 
-        .clock-container:hover {
-            border-color: rgba(0, 255, 65, 0.4);
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
-        }
-
-        .clock-label {
-            color: #4f7b91; font-size: clamp(8px, 1.2vw, 9px); 
-            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;
-        }
-
-        .clock-date {
-            color: #a0b9c6; font-size: clamp(11px, 1.5vw, 14px); 
-            letter-spacing: 2px; margin-bottom: 6px;
-        }
-
-        .clock-time {
-            color: #00ff41; font-size: clamp(26px, 4.5vw, 36px); 
-            letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
-            font-weight: bold; line-height: 1;
-        }
-
-        .clock-timezone {
-            color: #4f7b91; font-size: clamp(8px, 1.1vw, 10px); 
-            letter-spacing: 2px; margin-top: 4px;
-        }
+        .clock-container:hover { border-color: rgba(0, 255, 65, 0.4); box-shadow: 0 0 20px rgba(0, 255, 65, 0.15); }
+        .clock-label { color: #4f7b91; font-size: clamp(8px, 1.2vw, 9px); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px; }
+        .clock-date { color: #a0b9c6; font-size: clamp(11px, 1.5vw, 14px); letter-spacing: 2px; margin-bottom: 6px; }
+        .clock-time { color: #00ff41; font-size: clamp(26px, 4.5vw, 36px); letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 65, 0.6); font-weight: bold; line-height: 1; }
+        .clock-timezone { color: #4f7b91; font-size: clamp(8px, 1.1vw, 10px); letter-spacing: 2px; margin-top: 4px; }
 
         @keyframes clockAppear {
             from { opacity: 0; transform: translateX(20px); }
             to { opacity: 1; transform: translateX(0); }
         }
+
+        /* PANEL DE ESTADO */
+        .status-panel {
+            position: absolute; top: clamp(15px, 3vh, 20px); left: clamp(20px, 4vw, 40px);
+            pointer-events: auto; z-index: 10;
+            animation: clockAppear 0.8s ease 2.4s forwards; opacity: 0;
+            display: flex; flex-direction: column; gap: 4px;
+            font-size: clamp(8px, 1vw, 10px); letter-spacing: 1px;
+        }
+
+        .status-row {
+            display: flex; align-items: center; gap: 6px;
+        }
+
+        .status-dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #ff4444; box-shadow: 0 0 6px rgba(255, 68, 68, 0.6);
+            transition: all 0.3s ease;
+        }
+
+        .status-dot.online { background: #00ff41; box-shadow: 0 0 8px rgba(0, 255, 65, 0.8); }
+        .status-dot.syncing { background: #ffaa00; box-shadow: 0 0 8px rgba(255, 170, 0, 0.6); animation: pulse 1s infinite; }
+        .status-dot.local { background: #00c8ff; box-shadow: 0 0 8px rgba(0, 200, 255, 0.6); }
+
+        .status-text { color: #4f7b91; }
+        .status-value { color: #00ff41; font-weight: bold; }
+
+        .requests-bar-container {
+            width: 80px; height: 4px; background: rgba(255,255,255,0.1);
+            border-radius: 2px; overflow: hidden; margin-top: 2px;
+        }
+
+        .requests-bar {
+            height: 100%; background: #00ff41; border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+
+        .requests-bar.warning { background: #ffaa00; }
+        .requests-bar.danger { background: #ff4444; }
+
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
         /* CONTENIDO PRINCIPAL */
         .main-content {
@@ -166,7 +181,6 @@
             backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
         }
 
-        /* TABS */
         .tabs {
             display: flex; gap: 0; border-bottom: 2px solid rgba(0, 255, 65, 0.2);
             margin-bottom: clamp(15px, 3vw, 25px);
@@ -190,11 +204,7 @@
         .tab.active { color: #00ff41; }
         .tab.active::after { width: 100%; box-shadow: 0 0 10px rgba(0, 255, 65, 0.5); }
 
-        .panel {
-            display: none; flex-direction: column; gap: clamp(12px, 2.5vw, 20px);
-            animation: panelSlide 0.3s ease;
-        }
-
+        .panel { display: none; flex-direction: column; gap: clamp(12px, 2.5vw, 20px); animation: panelSlide 0.3s ease; }
         .panel.active { display: flex; }
 
         @keyframes panelSlide {
@@ -209,10 +219,7 @@
             text-transform: uppercase; display: flex; align-items: center; gap: 8px;
         }
 
-        .label-icon {
-            display: inline-block; width: 14px; text-align: center;
-            font-size: clamp(12px, 1.8vw, 14px); color: #00ff41;
-        }
+        .label-icon { display: inline-block; width: 14px; text-align: center; font-size: clamp(12px, 1.8vw, 14px); color: #00ff41; }
 
         .input {
             background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.3);
@@ -223,14 +230,9 @@
             transition: all 0.3s ease; width: 100%; border-radius: 4px;
         }
 
-        .input:focus {
-            border-color: #00ff41; box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
-            background: rgba(0, 255, 65, 0.08);
-        }
-
+        .input:focus { border-color: #00ff41; box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); background: rgba(0, 255, 65, 0.08); }
         .input::placeholder { color: rgba(79, 123, 145, 0.5); }
 
-        /* BOTONES */
         .action-button {
             background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; color: #00ff41;
             font-family: 'Share Tech Mono', monospace; 
@@ -248,29 +250,14 @@
         }
 
         .action-button:hover::before { left: 100%; }
-
-        .action-button:hover {
-            background: rgba(0, 255, 65, 0.2); box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
-            color: #ffffff; transform: translateY(-2px);
-        }
-
+        .action-button:hover { background: rgba(0, 255, 65, 0.2); box-shadow: 0 0 25px rgba(0, 255, 65, 0.4); color: #ffffff; transform: translateY(-2px); }
         .action-button:active { transform: scale(0.98); background: rgba(0, 255, 65, 0.3); }
+        .action-button:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
-        .action-button.delete {
-            border-color: #ff4444; color: #ff4444;
-            background: rgba(255, 68, 68, 0.05);
-        }
+        .action-button.delete { border-color: #ff4444; color: #ff4444; background: rgba(255, 68, 68, 0.05); }
+        .action-button.delete::before { background: linear-gradient(90deg, transparent, rgba(255,68,68,0.2), transparent); }
+        .action-button.delete:hover { background: rgba(255, 68, 68, 0.2); box-shadow: 0 0 25px rgba(255, 68, 68, 0.4); color: #ffffff; }
 
-        .action-button.delete::before {
-            background: linear-gradient(90deg, transparent, rgba(255,68,68,0.2), transparent);
-        }
-
-        .action-button.delete:hover {
-            background: rgba(255, 68, 68, 0.2); box-shadow: 0 0 25px rgba(255, 68, 68, 0.4);
-            color: #ffffff;
-        }
-
-        /* BOTON COPIAR */
         .copy-button {
             background: rgba(0, 200, 255, 0.08); border: 1px solid #00c8ff; color: #00c8ff;
             font-family: 'Share Tech Mono', monospace; 
@@ -282,18 +269,9 @@
             justify-content: center;
         }
 
-        .copy-button:hover {
-            background: rgba(0, 200, 255, 0.18); box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
-            color: #ffffff; transform: translateY(-1px);
-        }
-
+        .copy-button:hover { background: rgba(0, 200, 255, 0.18); box-shadow: 0 0 20px rgba(0, 200, 255, 0.4); color: #ffffff; transform: translateY(-1px); }
         .copy-button:active { transform: scale(0.95); }
-        .copy-button.copied {
-            background: rgba(0, 255, 65, 0.2); border-color: #00ff41; color: #00ff41;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
-        }
 
-        /* CAJAS DE RESULTADO */
         .result-box {
             padding: clamp(10px, 1.5vw, 15px); border-radius: 4px; display: none;
             animation: fadeIn 0.3s ease; font-size: clamp(11px, 1.5vw, 13px); 
@@ -301,14 +279,11 @@
         }
 
         .result-box.show { display: block; }
-        .result-box.success {
-            background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; color: #00ff41;
-        }
-        .result-box.error {
-            background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444;
-        }
+        .result-box.success { background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; color: #00ff41; }
+        .result-box.error { background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444; }
+        .result-box.info { background: rgba(0, 200, 255, 0.1); border: 1px solid #00c8ff; color: #00c8ff; }
+        .result-box.warning { background: rgba(255, 170, 0, 0.1); border: 1px solid #ffaa00; color: #ffaa00; }
 
-        /* TARJETA DE USUARIO */
         .user-card {
             background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.3);
             border-radius: 8px; padding: clamp(15px, 2.5vw, 20px); 
@@ -317,71 +292,19 @@
             transition: all 0.3s ease;
         }
 
-        .user-card:hover {
-            background: rgba(0, 255, 65, 0.08); border-color: #00ff41;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
-            transform: translateX(5px);
-        }
+        .user-card:hover { background: rgba(0, 255, 65, 0.08); border-color: #00ff41; box-shadow: 0 0 20px rgba(0, 255, 65, 0.2); transform: translateX(5px); }
+        .user-card-header { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .user-card-name { color: #00ff41; font-size: clamp(14px, 2.2vw, 18px); letter-spacing: 2px; text-shadow: 0 0 10px rgba(0, 255, 65, 0.3); flex: 1; }
+        .user-card-evo-badge { background: rgba(0, 255, 65, 0.15); border: 1px solid #00ff41; color: #00ff41; padding: 4px 12px; border-radius: 20px; font-size: clamp(10px, 1.4vw, 12px); letter-spacing: 2px; font-weight: bold; white-space: nowrap; text-shadow: 0 0 8px rgba(0, 255, 65, 0.4); }
+        .user-card-details { display: flex; flex-direction: column; gap: 8px; padding-top: 10px; border-top: 1px solid rgba(0, 255, 65, 0.1); }
+        .user-card-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-size: clamp(11px, 1.6vw, 13px); letter-spacing: 1px; }
+        .user-card-label { color: #4f7b91; min-width: 35px; }
+        .user-card-value { color: #a0b9c6; flex: 1; }
+        .user-card-value.id-highlight { color: #ffffff; font-weight: bold; }
 
-        .user-card-header {
-            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
-        }
+        .delete-section { border-top: 1px solid rgba(255, 68, 68, 0.3); padding-top: clamp(15px, 2.5vw, 20px); margin-top: clamp(15px, 2.5vw, 20px); }
+        .warning-text { color: #ff4444; font-size: clamp(9px, 1.3vw, 10px); letter-spacing: 1px; text-align: center; text-transform: uppercase; margin-bottom: clamp(10px, 2vw, 15px); animation: pulse 2s infinite; }
 
-        .user-card-name {
-            color: #00ff41; font-size: clamp(14px, 2.2vw, 18px); letter-spacing: 2px;
-            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3); flex: 1;
-        }
-
-        .user-card-evo-badge {
-            background: rgba(0, 255, 65, 0.15); border: 1px solid #00ff41;
-            color: #00ff41; padding: 4px 12px; border-radius: 20px;
-            font-size: clamp(10px, 1.4vw, 12px); letter-spacing: 2px;
-            font-weight: bold; white-space: nowrap;
-            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
-        }
-
-        .user-card-details {
-            display: flex; flex-direction: column; gap: 8px;
-            padding-top: 10px; border-top: 1px solid rgba(0, 255, 65, 0.1);
-        }
-
-        .user-card-row {
-            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
-            font-size: clamp(11px, 1.6vw, 13px); letter-spacing: 1px;
-        }
-
-        .user-card-label {
-            color: #4f7b91; min-width: 35px;
-        }
-
-        .user-card-value {
-            color: #a0b9c6; flex: 1;
-        }
-
-        .user-card-value.id-highlight {
-            color: #ffffff; font-weight: bold;
-        }
-
-        /* SECCION ELIMINAR */
-        .delete-section {
-            border-top: 1px solid rgba(255, 68, 68, 0.3); 
-            padding-top: clamp(15px, 2.5vw, 20px);
-            margin-top: clamp(15px, 2.5vw, 20px);
-        }
-
-        .warning-text {
-            color: #ff4444; font-size: clamp(9px, 1.3vw, 10px); letter-spacing: 1px;
-            text-align: center; text-transform: uppercase; 
-            margin-bottom: clamp(10px, 2vw, 15px);
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        /* TOAST */
         .toast-notification {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             background: rgba(0, 255, 65, 0.15); border: 1px solid #00ff41;
@@ -395,17 +318,17 @@
         .toast-notification.show { opacity: 1; }
 
         @media (max-width: 480px) {
-            .clock-container { 
-                bottom: 15px; right: 15px; 
-                padding: 8px 14px;
-            }
+            .clock-container { bottom: 15px; right: 15px; padding: 8px 14px; }
             .clock-time { font-size: 22px; }
+            .status-panel { top: auto; bottom: 15px; left: 15px; }
+            .status-panel .requests-bar-container { width: 50px; }
             .user-card-header { flex-direction: column; align-items: flex-start; }
             .copy-button { width: 100%; margin-top: 8px; }
         }
 
         @media (max-width: 380px) {
             .clock-container { display: none; }
+            .status-panel { bottom: 10px; left: 10px; font-size: 7px; }
         }
 
         @media (min-width: 1200px) {
@@ -427,13 +350,31 @@
     </div>
 
     <div class="ui-container" id="ui-container">
-        <!-- LOGO -->
+        <!-- PANEL DE ESTADO -->
+        <div class="status-panel" id="status-panel">
+            <div class="status-row">
+                <div class="status-dot syncing" id="cloud-dot"></div>
+                <span class="status-text" id="cloud-text">CLOUD: SYNCING</span>
+            </div>
+            <div class="status-row">
+                <span class="status-text">REQ: </span>
+                <span class="status-value" id="req-count">0/300</span>
+                <span class="status-text">TODAY</span>
+            </div>
+            <div class="requests-bar-container">
+                <div class="requests-bar" id="requests-bar" style="width: 0%;"></div>
+            </div>
+            <div class="status-row" style="margin-top: 2px;">
+                <span class="status-text">RESET: </span>
+                <span class="status-value" id="reset-time">--:--:--</span>
+            </div>
+        </div>
+
         <div class="logo-container">
             <div class="logo-main">GENXS</div>
             <div class="logo-sub">TEAM GENXS</div>
         </div>
 
-        <!-- RELOJ -->
         <div class="clock-container" id="clock-container">
             <div class="clock-label">[ SYSTEM CLOCK ]</div>
             <div class="clock-date" id="clock-date"></div>
@@ -441,7 +382,6 @@
             <div class="clock-timezone" id="clock-timezone"></div>
         </div>
 
-        <!-- CONTENIDO -->
         <div class="main-content">
             <div class="id-container">
                 <div class="tabs">
@@ -449,31 +389,25 @@
                     <button class="tab" data-tab="search">[ ? ] SEARCH</button>
                 </div>
 
-                <!-- PANEL AGREGAR -->
                 <div class="panel active" id="panel-add">
                     <div class="input-group">
                         <div class="label"><span class="label-icon">></span> PLAYER NAME</div>
                         <input type="text" class="input" id="add-name" placeholder="Enter player name..." maxlength="30">
                     </div>
-
                     <div class="input-group">
                         <div class="label"><span class="label-icon">#</span> PLAYER ID</div>
                         <input type="text" class="input" id="add-id" placeholder="Enter player ID..." maxlength="20">
                     </div>
-
                     <div class="input-group">
                         <div class="label"><span class="label-icon">~</span> EVO</div>
                         <input type="text" class="input" id="add-evo" placeholder="Ej: 100K, 320K, 1M..." maxlength="10">
                     </div>
-
-                    <button class="action-button" onclick="addUser()">
+                    <button class="action-button" id="add-button" onclick="addUser()">
                         [ SAVE USER TO DATABASE ]
                     </button>
-
                     <div class="result-box" id="add-result"></div>
                 </div>
 
-                <!-- PANEL BUSCAR -->
                 <div class="panel" id="panel-search">
                     <div class="input-group">
                         <div class="label"><span class="label-icon">></span> SEARCH BY PLAYER NAME</div>
@@ -482,13 +416,12 @@
                     <div id="search-results"></div>
                 </div>
 
-                <!-- ELIMINAR -->
                 <div class="delete-section">
                     <div class="warning-text">// DANGER ZONE - DELETE USERS</div>
                     <div class="input-group" style="margin-bottom: 10px;">
                         <input type="text" class="input" id="delete-name" placeholder="Enter name to delete..." style="border-color: rgba(255, 68, 68, 0.5);">
                     </div>
-                    <button class="action-button delete" onclick="deleteUser()">
+                    <button class="action-button delete" id="delete-button" onclick="deleteUser()">
                         [ PERMANENTLY DELETE USER ]
                     </button>
                     <div class="result-box" id="delete-result"></div>
@@ -500,42 +433,228 @@
     <div class="toast-notification" id="toast"></div>
 
     <script>
-        // ==================== BASE DE DATOS ====================
-        let userDatabase = JSON.parse(localStorage.getItem('genxs_user_database') || '{}');
+        // ==================== CONFIGURACIÓN ====================
+        const JSONBIN_API_KEY = '$2a$10$h9MvG/jzDCkflovq1dFrheyHxlwURYG0cG18tsY6ybGRfrpQcmpQy';
+        const JSONBIN_BIN_ID = '6a5e8e19f5f4af5e29a9a0ff';
+        const JSONBIN_URL = `https://api.jsonbin.io/v3/b/${JSONBIN_BIN_ID}`;
+        
+        // LÍMITE DIARIO DE REQUESTS (300/día = ~9,000/mes, deja margen de 1,000)
+        const DAILY_LIMIT = 300;
+        
+        let userDatabase = {};
+        let dailyRequests = 0;
+        let lastResetDate = '';
+        let cloudLoaded = false;
 
-        function saveDatabase() {
-            localStorage.setItem('genxs_user_database', JSON.stringify(userDatabase));
+        // ==================== GESTIÓN DE LÍMITES DIARIOS ====================
+        function getToday() {
+            return new Date().toLocaleDateString('en-US', { timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone });
         }
 
-        // ==================== RELOJ EN TIEMPO REAL ====================
+        function loadRequestData() {
+            const saved = JSON.parse(localStorage.getItem('genxs_requests') || '{}');
+            const today = getToday();
+            
+            if (saved.date !== today) {
+                // Nuevo día - reiniciar contador
+                dailyRequests = 0;
+                lastResetDate = today;
+                saveRequestData();
+            } else {
+                dailyRequests = saved.count || 0;
+                lastResetDate = saved.date || today;
+            }
+        }
+
+        function saveRequestData() {
+            localStorage.setItem('genxs_requests', JSON.stringify({
+                date: getToday(),
+                count: dailyRequests
+            }));
+        }
+
+        function canMakeRequest() {
+            return dailyRequests < DAILY_LIMIT;
+        }
+
+        function remainingRequests() {
+            return DAILY_LIMIT - dailyRequests;
+        }
+
+        function getNextResetTime() {
+            const now = new Date();
+            const tomorrow = new Date(now);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            tomorrow.setHours(0, 0, 0, 0);
+            
+            const diff = tomorrow - now;
+            const hours = Math.floor(diff / 3600000);
+            const minutes = Math.floor((diff % 3600000) / 60000);
+            const seconds = Math.floor((diff % 60000) / 1000);
+            
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        // ==================== ACTUALIZAR PANEL DE ESTADO ====================
+        function updateStatusPanel() {
+            const reqCount = document.getElementById('req-count');
+            const requestsBar = document.getElementById('requests-bar');
+            const resetTime = document.getElementById('reset-time');
+            
+            const used = dailyRequests;
+            const percentage = (used / DAILY_LIMIT) * 100;
+            
+            reqCount.innerText = `${used}/${DAILY_LIMIT}`;
+            requestsBar.style.width = percentage + '%';
+            
+            // Colores según uso
+            requestsBar.className = 'requests-bar';
+            if (percentage > 80) requestsBar.classList.add('danger');
+            else if (percentage > 50) requestsBar.classList.add('warning');
+            
+            resetTime.innerText = getNextResetTime();
+        }
+
+        function setCloudStatus(status) {
+            const dot = document.getElementById('cloud-dot');
+            const text = document.getElementById('cloud-text');
+            
+            dot.className = 'status-dot ' + status;
+            if (status === 'online') text.innerText = 'CLOUD: ONLINE';
+            else if (status === 'syncing') text.innerText = 'CLOUD: SYNCING';
+            else if (status === 'local') text.innerText = 'LOCAL ONLY';
+            else text.innerText = 'CLOUD: OFFLINE';
+        }
+
+        // ==================== CARGAR DATOS (CON CACHÉ) ====================
+        async function loadFromCloud(force = false) {
+            // Si ya cargamos hoy y no es forzado, usar caché local
+            const today = getToday();
+            const lastLoad = localStorage.getItem('genxs_last_load_date');
+            
+            if (!force && cloudLoaded && lastLoad === today) {
+                setCloudStatus('online');
+                return true;
+            }
+            
+            if (!canMakeRequest() && !force) {
+                // Sin requests disponibles, cargar de localStorage
+                const local = localStorage.getItem('genxs_backup');
+                if (local) userDatabase = JSON.parse(local);
+                setCloudStatus('local');
+                return false;
+            }
+            
+            setCloudStatus('syncing');
+            try {
+                const response = await fetch(JSONBIN_URL + '/latest', {
+                    headers: { 'X-Master-Key': JSONBIN_API_KEY }
+                });
+                
+                dailyRequests++;
+                saveRequestData();
+                
+                if (!response.ok) throw new Error('Error al cargar');
+                
+                const data = await response.json();
+                userDatabase = data.record.users || {};
+                localStorage.setItem('genxs_backup', JSON.stringify(userDatabase));
+                localStorage.setItem('genxs_last_load_date', today);
+                cloudLoaded = true;
+                setCloudStatus('online');
+                return true;
+            } catch (error) {
+                console.error('Error nube:', error);
+                const local = localStorage.getItem('genxs_backup');
+                if (local) userDatabase = JSON.parse(local);
+                setCloudStatus('local');
+                return false;
+            }
+        }
+
+        // ==================== GUARDAR EN LOTE ====================
+        let pendingChanges = false;
+        let saveTimeout = null;
+
+        async function saveToCloud() {
+            // Si no hay cambios pendientes, no hacer nada
+            if (!pendingChanges) return true;
+            
+            if (!canMakeRequest()) {
+                // Sin requests - guardar solo local
+                localStorage.setItem('genxs_backup', JSON.stringify(userDatabase));
+                setCloudStatus('local');
+                return false;
+            }
+            
+            setCloudStatus('syncing');
+            try {
+                const response = await fetch(JSONBIN_URL, {
+                    method: 'PUT',
+                    headers: {
+                        'X-Master-Key': JSONBIN_API_KEY,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ users: userDatabase })
+                });
+                
+                dailyRequests++;
+                saveRequestData();
+                
+                if (!response.ok) throw new Error('Error al guardar');
+                
+                localStorage.setItem('genxs_backup', JSON.stringify(userDatabase));
+                localStorage.setItem('genxs_last_load_date', getToday());
+                pendingChanges = false;
+                setCloudStatus('online');
+                return true;
+            } catch (error) {
+                console.error('Error guardando:', error);
+                localStorage.setItem('genxs_backup', JSON.stringify(userDatabase));
+                setCloudStatus('local');
+                return false;
+            }
+        }
+
+        function scheduleCloudSave() {
+            pendingChanges = true;
+            // Guardar en lote: espera 2 segundos por si hay más cambios
+            if (saveTimeout) clearTimeout(saveTimeout);
+            saveTimeout = setTimeout(() => {
+                saveToCloud().then(() => updateStatusPanel());
+            }, 2000);
+        }
+
+        // ==================== RELOJ ====================
         function updateClock() {
             const now = new Date();
-            
-            // Fecha: WED, JUL 20, 2026
             const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
-            const dateStr = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
-            document.getElementById('clock-date').innerText = dateStr;
+            document.getElementById('clock-date').innerText = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
             
-            // Hora completa: 14:30:45
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
             document.getElementById('clock-time').innerText = `${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock-timezone').innerText = Intl.DateTimeFormat().resolvedOptions().timeZone;
             
-            // Zona horaria
-            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-            document.getElementById('clock-timezone').innerText = timezone;
+            // Actualizar tiempo de reseteo
+            const resetTime = document.getElementById('reset-time');
+            if (resetTime) resetTime.innerText = getNextResetTime();
         }
 
         setInterval(updateClock, 1000);
         updateClock();
 
+        // Actualizar panel cada 30 segundos
+        setInterval(updateStatusPanel, 30000);
+
         // ==================== AGREGAR USUARIO ====================
-        function addUser() {
+        async function addUser() {
             const name = document.getElementById('add-name').value.trim();
             const id = document.getElementById('add-id').value.trim();
             const evo = document.getElementById('add-evo').value.trim();
             const resultBox = document.getElementById('add-result');
+            const addButton = document.getElementById('add-button');
             
             if (!name || !id) {
                 showResult(resultBox, '> PLEASE FILL NAME AND ID FIELDS', 'error');
@@ -558,19 +677,33 @@
                 return;
             }
             
+            addButton.disabled = true;
+            addButton.innerText = '[ SAVING... ]';
+            
             userDatabase[name] = {
                 id: id,
                 evo: evo,
                 createdAt: new Date().toISOString()
             };
             
-            saveDatabase();
+            // Programar guardado en lote
+            scheduleCloudSave();
             
             document.getElementById('add-name').value = '';
             document.getElementById('add-id').value = '';
             document.getElementById('add-evo').value = '';
             
-            showResult(resultBox, `>> USER SAVED SUCCESSFULLY\n   NAME: ${name}\n   ID: ${id}\n   EVO: ${evo}`, 'success');
+            addButton.disabled = false;
+            addButton.innerText = '[ SAVE USER TO DATABASE ]';
+            
+            const remaining = remainingRequests();
+            const statusMsg = canMakeRequest() ? 
+                `(CLOUD PENDING - ${remaining} REQ LEFT TODAY)` : 
+                `(LOCAL ONLY - NO REQUESTS LEFT)`;
+            
+            showResult(resultBox, `>> USER SAVED\n   NAME: ${name}\n   ID: ${id}\n   EVO: ${evo}\n   ${statusMsg}`, 'success');
+            
+            updateStatusPanel();
         }
 
         // ==================== COPIAR ====================
@@ -578,12 +711,8 @@
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(text).then(() => {
                     showToast('>> ID COPIED TO CLIPBOARD');
-                }).catch(() => {
-                    fallbackCopy(text);
-                });
-            } else {
-                fallbackCopy(text);
-            }
+                }).catch(() => { fallbackCopy(text); });
+            } else { fallbackCopy(text); }
         }
 
         function fallbackCopy(text) {
@@ -595,12 +724,8 @@
             document.body.appendChild(textarea);
             textarea.focus();
             textarea.select();
-            try {
-                document.execCommand('copy');
-                showToast('>> ID COPIED TO CLIPBOARD');
-            } catch (err) {
-                showToast('>> ERROR COPYING');
-            }
+            try { document.execCommand('copy'); showToast('>> ID COPIED TO CLIPBOARD'); } 
+            catch (err) { showToast('>> ERROR COPYING'); }
             document.body.removeChild(textarea);
         }
 
@@ -608,31 +733,22 @@
             const toast = document.getElementById('toast');
             toast.innerText = message;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+            setTimeout(() => { toast.classList.remove('show'); }, 2000);
         }
 
-        // ==================== BUSQUEDA SOLO POR NOMBRE ====================
+        // ==================== BUSQUEDA (LOCAL - NO GASTA REQUESTS) ====================
         function liveSearch() {
             const searchTerm = document.getElementById('search-name').value.trim().toLowerCase();
             const resultsContainer = document.getElementById('search-results');
             
-            if (!searchTerm) {
-                resultsContainer.innerHTML = '';
-                return;
-            }
+            if (!searchTerm) { resultsContainer.innerHTML = ''; return; }
             
             const results = Object.entries(userDatabase).filter(([name]) => 
                 name.toLowerCase().includes(searchTerm)
             );
             
             if (results.length === 0) {
-                resultsContainer.innerHTML = `
-                    <div class="result-box error show" style="margin-top: 10px;">
-                        > NO USERS FOUND WITH NAME "${searchTerm}"
-                    </div>
-                `;
+                resultsContainer.innerHTML = `<div class="result-box error show" style="margin-top: 10px;">> NO USERS FOUND WITH NAME "${searchTerm}"</div>`;
                 return;
             }
             
@@ -650,9 +766,7 @@
                         <div class="user-card-row">
                             <span class="user-card-label">#</span>
                             <span class="user-card-value id-highlight">${data.id}</span>
-                            <button class="copy-button" onclick="event.stopPropagation(); copyToClipboard('${data.id}')" title="Copy ID">
-                                [ COPY ]
-                            </button>
+                            <button class="copy-button" onclick="event.stopPropagation(); copyToClipboard('${data.id}')" title="Copy ID">[ COPY ]</button>
                         </div>
                     </div>
                 </div>
@@ -660,37 +774,45 @@
         }
 
         // ==================== ELIMINAR ====================
-        function deleteUser() {
+        async function deleteUser() {
             const name = document.getElementById('delete-name').value.trim();
             const resultBox = document.getElementById('delete-result');
+            const deleteButton = document.getElementById('delete-button');
             
-            if (!name) {
-                showResult(resultBox, '> PLEASE ENTER A NAME TO DELETE', 'error');
-                return;
-            }
-            
-            if (!userDatabase[name]) {
-                showResult(resultBox, `> USER "${name}" NOT FOUND`, 'error');
-                return;
-            }
+            if (!name) { showResult(resultBox, '> PLEASE ENTER A NAME TO DELETE', 'error'); return; }
+            if (!userDatabase[name]) { showResult(resultBox, `> USER "${name}" NOT FOUND`, 'error'); return; }
             
             if (confirm(`// DELETE "${name}"?\n// This action cannot be undone!`)) {
+                deleteButton.disabled = true;
+                deleteButton.innerText = '[ DELETING... ]';
+                
                 const userData = userDatabase[name];
                 delete userDatabase[name];
-                saveDatabase();
+                
+                scheduleCloudSave();
                 
                 document.getElementById('delete-name').value = '';
-                showResult(resultBox, `>> USER "${name}" (ID: ${userData.id}) DELETED`, 'success');
-                
                 document.getElementById('search-name').value = '';
                 document.getElementById('search-results').innerHTML = '';
+                
+                deleteButton.disabled = false;
+                deleteButton.innerText = '[ PERMANENTLY DELETE USER ]';
+                
+                const remaining = remainingRequests();
+                const statusMsg = canMakeRequest() ? 
+                    `(CLOUD PENDING - ${remaining} REQ LEFT)` : 
+                    `(LOCAL ONLY - NO REQUESTS LEFT)`;
+                
+                showResult(resultBox, `>> USER "${name}" (ID: ${userData.id}) DELETED\n   ${statusMsg}`, 'success');
+                
+                updateStatusPanel();
             }
         }
 
         function showResult(element, message, type) {
             element.innerText = message;
             element.className = `result-box show ${type}`;
-            setTimeout(() => { element.classList.remove('show'); }, 5000);
+            setTimeout(() => { element.classList.remove('show'); }, 6000);
         }
 
         // ==================== CAMBIO DE PESTAÑAS ====================
@@ -698,41 +820,38 @@
             tab.addEventListener('click', () => {
                 document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
                 tab.classList.add('active');
-                
                 document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
                 const targetPanel = document.getElementById(`panel-${tab.dataset.tab}`);
-                if (targetPanel) {
-                    targetPanel.classList.add('active');
-                }
+                if (targetPanel) targetPanel.classList.add('active');
             });
         });
 
-        // Enter en campos
-        document.getElementById('add-evo').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') addUser();
-        });
-
-        document.getElementById('delete-name').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') deleteUser();
-        });
+        document.getElementById('add-evo').addEventListener('keypress', (e) => { if (e.key === 'Enter') addUser(); });
+        document.getElementById('delete-name').addEventListener('keypress', (e) => { if (e.key === 'Enter') deleteUser(); });
 
         // ==================== INICIALIZACION ====================
-        setTimeout(() => {
-            document.getElementById('intro-logo').classList.add('done');
-            document.getElementById('intro-subtitle').classList.add('done');
-            document.getElementById('intro-animation').classList.add('done');
-            document.getElementById('ui-container').classList.add('visible');
-        }, 2000);
+        async function init() {
+            loadRequestData();
+            updateStatusPanel();
+            await loadFromCloud();
+            updateStatusPanel();
+            
+            setTimeout(() => {
+                document.getElementById('intro-logo').classList.add('done');
+                document.getElementById('intro-subtitle').classList.add('done');
+                document.getElementById('intro-animation').classList.add('done');
+                document.getElementById('ui-container').classList.add('visible');
+            }, 2000);
+        }
+
+        init();
 
         // ==================== PARTICULAS ====================
         const canvas = document.getElementById('particle-canvas');
         const ctx = canvas.getContext('2d');
         let particles = [];
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-        }
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
 
         class Particle {
             constructor() {
@@ -744,17 +863,13 @@
                 this.color = Math.random() > 0.7 ? 'rgba(0, 255, 65, 0.6)' : 'rgba(100, 130, 150, 0.2)';
             }
             update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
+                this.x += this.speedX; this.y += this.speedY;
                 if (this.x < 0) this.x = canvas.width;
                 if (this.x > canvas.width) this.x = 0;
                 if (this.y < 0) this.y = canvas.height;
                 if (this.y > canvas.height) this.y = 0;
             }
-            draw() {
-                ctx.fillStyle = this.color;
-                ctx.fillRect(this.x, this.y, this.size, this.size);
-            }
+            draw() { ctx.fillStyle = this.color; ctx.fillRect(this.x, this.y, this.size, this.size); }
         }
 
         function initParticles() {
@@ -769,14 +884,8 @@
             requestAnimationFrame(animateParticles);
         }
 
-        window.addEventListener('resize', () => {
-            resizeCanvas();
-            initParticles();
-        });
-
-        resizeCanvas();
-        initParticles();
-        animateParticles();
+        window.addEventListener('resize', () => { resizeCanvas(); initParticles(); });
+        resizeCanvas(); initParticles(); animateParticles();
     </script>
 </body>
 </html>
