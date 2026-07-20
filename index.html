@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>TEAM GENXS</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body, html {
+            width: 100%; height: 100%; background-color: #03060a; color: #ffffff;
+            font-family: 'Share Tech Mono', monospace; overflow: hidden;
+            position: fixed; touch-action: manipulation;
+        }
+
+        #particle-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
+
+        .ui-container {
+            position: relative; z-index: 2; width: 100%; height: 100%;
+            display: flex; flex-direction: column; align-items: center;
+            pointer-events: none; opacity: 0; transition: opacity 0.8s ease 1.8s;
+        }
+        .ui-container.visible { opacity: 1; }
+
+        /* INTRO ANIMATION */
+        .intro-animation {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 100; pointer-events: none; display: flex;
+            align-items: center; justify-content: center;
+            background: radial-gradient(circle at center, rgba(0,255,65,0.08) 0%, transparent 70%);
+        }
+
+        .intro-content {
+            display: flex; flex-direction: column; align-items: center; gap: 20px;
+        }
+
+        .intro-logo {
+            color: #00ff41; font-size: clamp(60px, 10vw, 100px); letter-spacing: clamp(10px, 2vw, 20px);
+            text-shadow: 0 0 40px rgba(0, 255, 65, 0.9), 0 0 80px rgba(0, 255, 65, 0.6), 0 0 120px rgba(0, 255, 65, 0.3), 0 0 200px rgba(0, 255, 65, 0.1);
+            animation: introPulse 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            font-family: 'Share Tech Mono', monospace; white-space: nowrap;
+        }
+
+        .intro-subtitle {
+            color: #4f7b91; font-size: clamp(12px, 2vw, 16px); letter-spacing: clamp(6px, 1.5vw, 10px);
+            opacity: 0; animation: subtitleFade 0.8s ease 0.6s forwards;
+            font-family: 'Share Tech Mono', monospace; white-space: nowrap;
+        }
+
+        .intro-scanline {
+            position: absolute; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff41, transparent);
+            animation: scanline 2s ease-in-out infinite; opacity: 0.3;
+        }
+
+        @keyframes scanline {
+            0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; }
+        }
+
+        @keyframes introPulse {
+            0% { opacity: 0; transform: scale(0.5); }
+            15% { opacity: 1; transform: scale(1.1); }
+            30% { transform: scale(1); }
+            60% { opacity: 1; }
+            100% { font-size: clamp(18px, 3vw, 24px); transform: translateY(-60px) scale(1); opacity: 1; }
+        }
+
+        @keyframes subtitleFade {
+            0% { opacity: 0; transform: translateY(20px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+
+        .intro-logo.done, .intro-subtitle.done, .intro-animation.done { display: none; }
+
+        /* LOGO SUPERIOR */
+        .logo-container {
+            position: absolute; top: clamp(15px, 3vh, 20px); left: 50%; transform: translateX(-50%);
+            pointer-events: auto; text-align: center; z-index: 10;
+            animation: logoAppear 0.6s ease 2s forwards; opacity: 0;
+            cursor: pointer; transition: all 0.3s ease;
+        }
+
+        .logo-container:hover { filter: drop-shadow(0 0 15px rgba(0, 255, 65, 0.6)); }
+
+        .logo-main {
+            color: #00ff41; font-size: clamp(18px, 3vw, 24px); letter-spacing: clamp(2px, 0.5vw, 4px);
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+        }
+
+        .logo-sub {
+            color: #4f7b91; font-size: clamp(8px, 1.5vw, 10px); letter-spacing: clamp(1px, 0.5vw, 3px);
+            margin-top: 2px;
+        }
+
+        @keyframes logoAppear {
+            from { opacity: 0; transform: translateX(-50%) translateY(-10px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* RELOJ */
+        .clock-container {
+            position: absolute; bottom: clamp(20px, 4vh, 40px); right: clamp(20px, 4vw, 40px);
+            pointer-events: auto; z-index: 10; text-align: right;
+            animation: clockAppear 0.8s ease 2.4s forwards; opacity: 0;
+            background: rgba(0, 255, 65, 0.03); border: 1px solid rgba(0, 255, 65, 0.15);
+            padding: clamp(10px, 2vw, 18px) clamp(15px, 3vw, 25px);
+            border-radius: 4px; backdrop-filter: blur(5px);
+            transition: all 0.3s ease;
+        }
+
+        .clock-container:hover {
+            border-color: rgba(0, 255, 65, 0.4);
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
+        }
+
+        .clock-label {
+            color: #4f7b91; font-size: clamp(8px, 1.2vw, 9px); 
+            letter-spacing: 3px; text-transform: uppercase; margin-bottom: 4px;
+        }
+
+        .clock-date {
+            color: #a0b9c6; font-size: clamp(11px, 1.5vw, 14px); 
+            letter-spacing: 2px; margin-bottom: 6px;
+        }
+
+        .clock-time {
+            color: #00ff41; font-size: clamp(26px, 4.5vw, 36px); 
+            letter-spacing: 4px; text-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
+            font-weight: bold; line-height: 1;
+        }
+
+        .clock-timezone {
+            color: #4f7b91; font-size: clamp(8px, 1.1vw, 10px); 
+            letter-spacing: 2px; margin-top: 4px;
+        }
+
+        @keyframes clockAppear {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* CONTENIDO PRINCIPAL */
+        .main-content {
+            margin-top: clamp(90px, 15vh, 120px); 
+            width: clamp(300px, 90%, 600px);
+            pointer-events: auto; animation: fadeIn 0.8s ease 2.2s forwards; opacity: 0;
+            max-height: calc(100vh - clamp(100px, 18vh, 150px)); overflow-y: auto;
+            scrollbar-width: thin; scrollbar-color: rgba(0,255,65,0.3) transparent;
+            padding-bottom: 20px;
+        }
+
+        .main-content::-webkit-scrollbar { width: 4px; }
+        .main-content::-webkit-scrollbar-track { background: transparent; }
+        .main-content::-webkit-scrollbar-thumb { background: rgba(0,255,65,0.3); border-radius: 2px; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .id-container {
+            background: rgba(0, 255, 65, 0.03); border: 1px solid rgba(0, 255, 65, 0.2);
+            border-radius: clamp(6px, 1vw, 8px); padding: clamp(15px, 3vw, 30px); 
+            backdrop-filter: blur(10px); box-shadow: 0 0 30px rgba(0, 255, 65, 0.1);
+        }
+
+        /* TABS */
+        .tabs {
+            display: flex; gap: 0; border-bottom: 2px solid rgba(0, 255, 65, 0.2);
+            margin-bottom: clamp(15px, 3vw, 25px);
+        }
+
+        .tab {
+            flex: 1; background: transparent; border: none; color: #4f7b91;
+            font-family: 'Share Tech Mono', monospace; font-size: clamp(12px, 1.8vw, 14px); 
+            letter-spacing: clamp(2px, 0.3vw, 3px);
+            padding: clamp(10px, 1.5vw, 12px) clamp(15px, 2vw, 20px); 
+            cursor: pointer; text-transform: uppercase;
+            transition: all 0.3s ease; position: relative; white-space: nowrap;
+        }
+
+        .tab::after {
+            content: ''; position: absolute; bottom: -2px; left: 0; width: 0;
+            height: 2px; background: #00ff41; transition: width 0.3s ease;
+        }
+
+        .tab:hover { color: #00ff41; }
+        .tab.active { color: #00ff41; }
+        .tab.active::after { width: 100%; box-shadow: 0 0 10px rgba(0, 255, 65, 0.5); }
+
+        .panel {
+            display: none; flex-direction: column; gap: clamp(12px, 2.5vw, 20px);
+            animation: panelSlide 0.3s ease;
+        }
+
+        .panel.active { display: flex; }
+
+        @keyframes panelSlide {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .input-group { display: flex; flex-direction: column; gap: clamp(5px, 1vw, 8px); }
+
+        .label {
+            color: #00ff41; font-size: clamp(9px, 1.5vw, 11px); letter-spacing: clamp(2px, 0.5vw, 3px);
+            text-transform: uppercase; display: flex; align-items: center; gap: 8px;
+        }
+
+        .label-icon {
+            display: inline-block; width: 14px; text-align: center;
+            font-size: clamp(12px, 1.8vw, 14px); color: #00ff41;
+        }
+
+        .input {
+            background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.3);
+            color: #ffffff; font-family: 'Share Tech Mono', monospace; 
+            font-size: clamp(12px, 1.8vw, 15px);
+            padding: clamp(10px, 1.5vw, 14px) clamp(12px, 2vw, 16px); 
+            letter-spacing: 1px; outline: none;
+            transition: all 0.3s ease; width: 100%; border-radius: 4px;
+        }
+
+        .input:focus {
+            border-color: #00ff41; box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+            background: rgba(0, 255, 65, 0.08);
+        }
+
+        .input::placeholder { color: rgba(79, 123, 145, 0.5); }
+
+        /* BOTONES */
+        .action-button {
+            background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; color: #00ff41;
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: clamp(11px, 1.6vw, 14px); letter-spacing: clamp(1px, 0.3vw, 2px);
+            padding: clamp(10px, 1.5vw, 14px) clamp(16px, 3vw, 24px); 
+            cursor: pointer; text-transform: uppercase;
+            transition: all 0.3s ease; width: 100%; border-radius: 4px;
+            position: relative; overflow: hidden;
+        }
+
+        .action-button::before {
+            content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0,255,65,0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .action-button:hover::before { left: 100%; }
+
+        .action-button:hover {
+            background: rgba(0, 255, 65, 0.2); box-shadow: 0 0 25px rgba(0, 255, 65, 0.4);
+            color: #ffffff; transform: translateY(-2px);
+        }
+
+        .action-button:active { transform: scale(0.98); background: rgba(0, 255, 65, 0.3); }
+
+        .action-button.delete {
+            border-color: #ff4444; color: #ff4444;
+            background: rgba(255, 68, 68, 0.05);
+        }
+
+        .action-button.delete::before {
+            background: linear-gradient(90deg, transparent, rgba(255,68,68,0.2), transparent);
+        }
+
+        .action-button.delete:hover {
+            background: rgba(255, 68, 68, 0.2); box-shadow: 0 0 25px rgba(255, 68, 68, 0.4);
+            color: #ffffff;
+        }
+
+        /* BOTON COPIAR */
+        .copy-button {
+            background: rgba(0, 200, 255, 0.08); border: 1px solid #00c8ff; color: #00c8ff;
+            font-family: 'Share Tech Mono', monospace; 
+            font-size: clamp(10px, 1.4vw, 12px); letter-spacing: clamp(1px, 0.2vw, 2px);
+            padding: clamp(8px, 1.2vw, 10px) clamp(12px, 2vw, 18px); 
+            cursor: pointer; text-transform: uppercase;
+            transition: all 0.3s ease; border-radius: 4px;
+            white-space: nowrap; display: inline-flex; align-items: center; gap: 6px;
+            justify-content: center;
+        }
+
+        .copy-button:hover {
+            background: rgba(0, 200, 255, 0.18); box-shadow: 0 0 20px rgba(0, 200, 255, 0.4);
+            color: #ffffff; transform: translateY(-1px);
+        }
+
+        .copy-button:active { transform: scale(0.95); }
+        .copy-button.copied {
+            background: rgba(0, 255, 65, 0.2); border-color: #00ff41; color: #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.4);
+        }
+
+        /* CAJAS DE RESULTADO */
+        .result-box {
+            padding: clamp(10px, 1.5vw, 15px); border-radius: 4px; display: none;
+            animation: fadeIn 0.3s ease; font-size: clamp(11px, 1.5vw, 13px); 
+            letter-spacing: 1px; line-height: 1.8; white-space: pre-line;
+        }
+
+        .result-box.show { display: block; }
+        .result-box.success {
+            background: rgba(0, 255, 65, 0.1); border: 1px solid #00ff41; color: #00ff41;
+        }
+        .result-box.error {
+            background: rgba(255, 68, 68, 0.1); border: 1px solid #ff4444; color: #ff4444;
+        }
+
+        /* TARJETA DE USUARIO */
+        .user-card {
+            background: rgba(0, 255, 65, 0.05); border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 8px; padding: clamp(15px, 2.5vw, 20px); 
+            display: flex; flex-direction: column; gap: clamp(10px, 2vw, 15px); 
+            animation: fadeIn 0.3s ease; margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .user-card:hover {
+            background: rgba(0, 255, 65, 0.08); border-color: #00ff41;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+            transform: translateX(5px);
+        }
+
+        .user-card-header {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+        }
+
+        .user-card-name {
+            color: #00ff41; font-size: clamp(14px, 2.2vw, 18px); letter-spacing: 2px;
+            text-shadow: 0 0 10px rgba(0, 255, 65, 0.3); flex: 1;
+        }
+
+        .user-card-evo-badge {
+            background: rgba(0, 255, 65, 0.15); border: 1px solid #00ff41;
+            color: #00ff41; padding: 4px 12px; border-radius: 20px;
+            font-size: clamp(10px, 1.4vw, 12px); letter-spacing: 2px;
+            font-weight: bold; white-space: nowrap;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+        }
+
+        .user-card-details {
+            display: flex; flex-direction: column; gap: 8px;
+            padding-top: 10px; border-top: 1px solid rgba(0, 255, 65, 0.1);
+        }
+
+        .user-card-row {
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+            font-size: clamp(11px, 1.6vw, 13px); letter-spacing: 1px;
+        }
+
+        .user-card-label {
+            color: #4f7b91; min-width: 35px;
+        }
+
+        .user-card-value {
+            color: #a0b9c6; flex: 1;
+        }
+
+        .user-card-value.id-highlight {
+            color: #ffffff; font-weight: bold;
+        }
+
+        /* SECCION ELIMINAR */
+        .delete-section {
+            border-top: 1px solid rgba(255, 68, 68, 0.3); 
+            padding-top: clamp(15px, 2.5vw, 20px);
+            margin-top: clamp(15px, 2.5vw, 20px);
+        }
+
+        .warning-text {
+            color: #ff4444; font-size: clamp(9px, 1.3vw, 10px); letter-spacing: 1px;
+            text-align: center; text-transform: uppercase; 
+            margin-bottom: clamp(10px, 2vw, 15px);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        /* TOAST */
+        .toast-notification {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: rgba(0, 255, 65, 0.15); border: 1px solid #00ff41;
+            color: #00ff41; padding: 12px 24px; border-radius: 4px;
+            font-family: 'Share Tech Mono', monospace; font-size: 13px;
+            letter-spacing: 2px; z-index: 300; pointer-events: none;
+            opacity: 0; transition: opacity 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .toast-notification.show { opacity: 1; }
+
+        @media (max-width: 480px) {
+            .clock-container { 
+                bottom: 15px; right: 15px; 
+                padding: 8px 14px;
+            }
+            .clock-time { font-size: 22px; }
+            .user-card-header { flex-direction: column; align-items: flex-start; }
+            .copy-button { width: 100%; margin-top: 8px; }
+        }
+
+        @media (max-width: 380px) {
+            .clock-container { display: none; }
+        }
+
+        @media (min-width: 1200px) {
+            .main-content { max-width: 650px; }
+            .id-container { padding: 35px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+
+    <div class="intro-animation" id="intro-animation">
+        <div class="intro-scanline"></div>
+        <div class="intro-content">
+            <h1 class="intro-logo" id="intro-logo">GENXS</h1>
+            <p class="intro-subtitle" id="intro-subtitle">TEAM GENXS</p>
+        </div>
+    </div>
+
+    <div class="ui-container" id="ui-container">
+        <!-- LOGO -->
+        <div class="logo-container">
+            <div class="logo-main">GENXS</div>
+            <div class="logo-sub">TEAM GENXS</div>
+        </div>
+
+        <!-- RELOJ -->
+        <div class="clock-container" id="clock-container">
+            <div class="clock-label">[ SYSTEM CLOCK ]</div>
+            <div class="clock-date" id="clock-date"></div>
+            <div class="clock-time" id="clock-time"></div>
+            <div class="clock-timezone" id="clock-timezone"></div>
+        </div>
+
+        <!-- CONTENIDO -->
+        <div class="main-content">
+            <div class="id-container">
+                <div class="tabs">
+                    <button class="tab active" data-tab="add">[ + ] ADD</button>
+                    <button class="tab" data-tab="search">[ ? ] SEARCH</button>
+                </div>
+
+                <!-- PANEL AGREGAR -->
+                <div class="panel active" id="panel-add">
+                    <div class="input-group">
+                        <div class="label"><span class="label-icon">></span> PLAYER NAME</div>
+                        <input type="text" class="input" id="add-name" placeholder="Enter player name..." maxlength="30">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label"><span class="label-icon">#</span> PLAYER ID</div>
+                        <input type="text" class="input" id="add-id" placeholder="Enter player ID..." maxlength="20">
+                    </div>
+
+                    <div class="input-group">
+                        <div class="label"><span class="label-icon">~</span> EVO</div>
+                        <input type="text" class="input" id="add-evo" placeholder="Ej: 100K, 320K, 1M..." maxlength="10">
+                    </div>
+
+                    <button class="action-button" onclick="addUser()">
+                        [ SAVE USER TO DATABASE ]
+                    </button>
+
+                    <div class="result-box" id="add-result"></div>
+                </div>
+
+                <!-- PANEL BUSCAR -->
+                <div class="panel" id="panel-search">
+                    <div class="input-group">
+                        <div class="label"><span class="label-icon">></span> SEARCH BY PLAYER NAME</div>
+                        <input type="text" class="input" id="search-name" placeholder="Type player name to search..." oninput="liveSearch()">
+                    </div>
+                    <div id="search-results"></div>
+                </div>
+
+                <!-- ELIMINAR -->
+                <div class="delete-section">
+                    <div class="warning-text">// DANGER ZONE - DELETE USERS</div>
+                    <div class="input-group" style="margin-bottom: 10px;">
+                        <input type="text" class="input" id="delete-name" placeholder="Enter name to delete..." style="border-color: rgba(255, 68, 68, 0.5);">
+                    </div>
+                    <button class="action-button delete" onclick="deleteUser()">
+                        [ PERMANENTLY DELETE USER ]
+                    </button>
+                    <div class="result-box" id="delete-result"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-notification" id="toast"></div>
+
+    <script>
+        // ==================== BASE DE DATOS ====================
+        let userDatabase = JSON.parse(localStorage.getItem('genxs_user_database') || '{}');
+
+        function saveDatabase() {
+            localStorage.setItem('genxs_user_database', JSON.stringify(userDatabase));
+        }
+
+        // ==================== RELOJ EN TIEMPO REAL ====================
+        function updateClock() {
+            const now = new Date();
+            
+            // Fecha: WED, JUL 20, 2026
+            const dateOptions = { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', dateOptions).toUpperCase();
+            document.getElementById('clock-date').innerText = dateStr;
+            
+            // Hora completa: 14:30:45
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById('clock-time').innerText = `${hours}:${minutes}:${seconds}`;
+            
+            // Zona horaria
+            const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('clock-timezone').innerText = timezone;
+        }
+
+        setInterval(updateClock, 1000);
+        updateClock();
+
+        // ==================== AGREGAR USUARIO ====================
+        function addUser() {
+            const name = document.getElementById('add-name').value.trim();
+            const id = document.getElementById('add-id').value.trim();
+            const evo = document.getElementById('add-evo').value.trim();
+            const resultBox = document.getElementById('add-result');
+            
+            if (!name || !id) {
+                showResult(resultBox, '> PLEASE FILL NAME AND ID FIELDS', 'error');
+                return;
+            }
+
+            if (!evo) {
+                showResult(resultBox, '> PLEASE ENTER AN EVO VALUE', 'error');
+                return;
+            }
+            
+            if (userDatabase[name]) {
+                showResult(resultBox, `> USER "${name}" ALREADY EXISTS IN DATABASE`, 'error');
+                return;
+            }
+            
+            const idExists = Object.values(userDatabase).some(user => user.id === id);
+            if (idExists) {
+                showResult(resultBox, '> THIS ID IS ALREADY REGISTERED TO ANOTHER USER', 'error');
+                return;
+            }
+            
+            userDatabase[name] = {
+                id: id,
+                evo: evo,
+                createdAt: new Date().toISOString()
+            };
+            
+            saveDatabase();
+            
+            document.getElementById('add-name').value = '';
+            document.getElementById('add-id').value = '';
+            document.getElementById('add-evo').value = '';
+            
+            showResult(resultBox, `>> USER SAVED SUCCESSFULLY\n   NAME: ${name}\n   ID: ${id}\n   EVO: ${evo}`, 'success');
+        }
+
+        // ==================== COPIAR ====================
+        function copyToClipboard(text) {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('>> ID COPIED TO CLIPBOARD');
+                }).catch(() => {
+                    fallbackCopy(text);
+                });
+            } else {
+                fallbackCopy(text);
+            }
+        }
+
+        function fallbackCopy(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.left = '-9999px';
+            textarea.style.top = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showToast('>> ID COPIED TO CLIPBOARD');
+            } catch (err) {
+                showToast('>> ERROR COPYING');
+            }
+            document.body.removeChild(textarea);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // ==================== BUSQUEDA SOLO POR NOMBRE ====================
+        function liveSearch() {
+            const searchTerm = document.getElementById('search-name').value.trim().toLowerCase();
+            const resultsContainer = document.getElementById('search-results');
+            
+            if (!searchTerm) {
+                resultsContainer.innerHTML = '';
+                return;
+            }
+            
+            const results = Object.entries(userDatabase).filter(([name]) => 
+                name.toLowerCase().includes(searchTerm)
+            );
+            
+            if (results.length === 0) {
+                resultsContainer.innerHTML = `
+                    <div class="result-box error show" style="margin-top: 10px;">
+                        > NO USERS FOUND WITH NAME "${searchTerm}"
+                    </div>
+                `;
+                return;
+            }
+            
+            resultsContainer.innerHTML = results.map(([name, data]) => createUserCard(name, data)).join('');
+        }
+
+        function createUserCard(name, data) {
+            return `
+                <div class="user-card">
+                    <div class="user-card-header">
+                        <div class="user-card-name">> ${name}</div>
+                        <div class="user-card-evo-badge">~ ${data.evo}</div>
+                    </div>
+                    <div class="user-card-details">
+                        <div class="user-card-row">
+                            <span class="user-card-label">#</span>
+                            <span class="user-card-value id-highlight">${data.id}</span>
+                            <button class="copy-button" onclick="event.stopPropagation(); copyToClipboard('${data.id}')" title="Copy ID">
+                                [ COPY ]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // ==================== ELIMINAR ====================
+        function deleteUser() {
+            const name = document.getElementById('delete-name').value.trim();
+            const resultBox = document.getElementById('delete-result');
+            
+            if (!name) {
+                showResult(resultBox, '> PLEASE ENTER A NAME TO DELETE', 'error');
+                return;
+            }
+            
+            if (!userDatabase[name]) {
+                showResult(resultBox, `> USER "${name}" NOT FOUND`, 'error');
+                return;
+            }
+            
+            if (confirm(`// DELETE "${name}"?\n// This action cannot be undone!`)) {
+                const userData = userDatabase[name];
+                delete userDatabase[name];
+                saveDatabase();
+                
+                document.getElementById('delete-name').value = '';
+                showResult(resultBox, `>> USER "${name}" (ID: ${userData.id}) DELETED`, 'success');
+                
+                document.getElementById('search-name').value = '';
+                document.getElementById('search-results').innerHTML = '';
+            }
+        }
+
+        function showResult(element, message, type) {
+            element.innerText = message;
+            element.className = `result-box show ${type}`;
+            setTimeout(() => { element.classList.remove('show'); }, 5000);
+        }
+
+        // ==================== CAMBIO DE PESTAÑAS ====================
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+                const targetPanel = document.getElementById(`panel-${tab.dataset.tab}`);
+                if (targetPanel) {
+                    targetPanel.classList.add('active');
+                }
+            });
+        });
+
+        // Enter en campos
+        document.getElementById('add-evo').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') addUser();
+        });
+
+        document.getElementById('delete-name').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') deleteUser();
+        });
+
+        // ==================== INICIALIZACION ====================
+        setTimeout(() => {
+            document.getElementById('intro-logo').classList.add('done');
+            document.getElementById('intro-subtitle').classList.add('done');
+            document.getElementById('intro-animation').classList.add('done');
+            document.getElementById('ui-container').classList.add('visible');
+        }, 2000);
+
+        // ==================== PARTICULAS ====================
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.color = Math.random() > 0.7 ? 'rgba(0, 255, 65, 0.6)' : 'rgba(100, 130, 150, 0.2)';
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.fillRect(this.x, this.y, this.size, this.size);
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            const count = window.innerWidth <= 768 ? 50 : 120;
+            for (let i = 0; i < count; i++) particles.push(new Particle());
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            initParticles();
+        });
+
+        resizeCanvas();
+        initParticles();
+        animateParticles();
+    </script>
+</body>
+</html>
